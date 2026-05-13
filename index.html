@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여행 준비물 체크리스트</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+  }
+
+  .container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 520px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    padding: 32px;
+  }
+
+  h1 {
+    font-size: 24px;
+    color: #2d3748;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #718096;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  /* Templates */
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #718096;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .templates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .template-btn {
+    padding: 8px 14px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .template-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateY(-1px);
+  }
+
+  .clear-btn {
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid #fed7d7;
+    color: #e53e3e;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: auto;
+  }
+
+  .clear-btn:hover {
+    background: #fff5f5;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .progress-text {
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .progress-text strong {
+    color: #667eea;
+    font-size: 16px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* Input row */
+  .input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  #itemInput {
+    flex: 1;
+    padding: 12px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  #itemInput:focus {
+    border-color: #667eea;
+  }
+
+  #categorySelect {
+    padding: 12px 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    outline: none;
+    color: #4a5568;
+  }
+
+  #categorySelect:focus {
+    border-color: #667eea;
+  }
+
+  #addBtn {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    flex-shrink: 0;
+  }
+
+  #addBtn:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  #addBtn:active {
+    transform: scale(0.97);
+  }
+
+  /* List with categories */
+  .category-group {
+    margin-bottom: 18px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4a5568;
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+
+  .category-icon {
+    font-size: 16px;
+  }
+
+  .category-count {
+    font-size: 12px;
+    color: #a0aec0;
+    font-weight: 500;
+  }
+
+  ul.items {
+    list-style: none;
+  }
+
+  ul.items li {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    background: #f7fafc;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    transition: background 0.2s;
+  }
+
+  ul.items li:hover {
+    background: #edf2f7;
+  }
+
+  ul.items li input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    cursor: pointer;
+    accent-color: #667eea;
+    flex-shrink: 0;
+  }
+
+  ul.items li .item-text {
+    flex: 1;
+    font-size: 15px;
+    color: #2d3748;
+    word-break: break-all;
+    cursor: text;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+
+  ul.items li .item-text:hover {
+    background: rgba(102, 126, 234, 0.08);
+  }
+
+  ul.items li.done .item-text {
+    text-decoration: line-through;
+    color: #a0aec0;
+  }
+
+  ul.items li .edit-input {
+    flex: 1;
+    font-size: 15px;
+    padding: 2px 6px;
+    border: 2px solid #667eea;
+    border-radius: 4px;
+    outline: none;
+    background: white;
+    font-family: inherit;
+    min-width: 0;
+  }
+
+  ul.items li .delete-btn {
+    background: transparent;
+    border: none;
+    color: #cbd5e0;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0 8px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  ul.items li .delete-btn:hover {
+    color: #e53e3e;
+    background: #fff5f5;
+  }
+
+  .empty {
+    text-align: center;
+    color: #a0aec0;
+    padding: 40px 0;
+    font-size: 14px;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: #a0aec0;
+    text-align: center;
+    margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>여행 준비물 체크리스트</h1>
+    <p class="subtitle">잊지 말고 챙겨가세요!</p>
+
+    <div class="section-label">템플릿 불러오기</div>
+    <div class="templates">
+      <button class="template-btn" data-template="해외여행">✈️ 해외여행</button>
+      <button class="template-btn" data-template="국내여행">🚗 국내여행</button>
+      <button class="template-btn" data-template="캠핑">⛺ 캠핑</button>
+      <button class="template-btn" data-template="출장">💼 출장</button>
+      <button class="clear-btn" id="clearBtn">🗑 전체삭제</button>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-text">
+        <span id="progressLabel">0개 중 0개 완료</span>
+        <strong id="progressPercent">0%</strong>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <input type="text" id="itemInput" placeholder="항목 입력..." maxlength="50">
+      <select id="categorySelect">
+        <option value="서류">📄 서류</option>
+        <option value="전자기기">🔌 전자기기</option>
+        <option value="의류">👕 의류</option>
+        <option value="세면도구">🧴 세면도구</option>
+        <option value="기타" selected>📦 기타</option>
+      </select>
+      <button id="addBtn">추가</button>
+    </div>
+
+    <div id="listArea"></div>
+    <p class="hint">💡 항목을 더블클릭하면 수정할 수 있어요</p>
+  </div>
+
+<script>
+  const CATEGORIES = [
+    { name: '서류', icon: '📄' },
+    { name: '전자기기', icon: '🔌' },
+    { name: '의류', icon: '👕' },
+    { name: '세면도구', icon: '🧴' },
+    { name: '기타', icon: '📦' },
+  ];
+
+  const TEMPLATES = {
+    '해외여행': [
+      { text: '여권', category: '서류' },
+      { text: '비자', category: '서류' },
+      { text: '항공권/E-티켓', category: '서류' },
+      { text: '여행자보험', category: '서류' },
+      { text: '환전한 현금', category: '서류' },
+      { text: '휴대폰 충전기', category: '전자기기' },
+      { text: '보조배터리', category: '전자기기' },
+      { text: '멀티 어댑터', category: '전자기기' },
+      { text: '속옷/양말', category: '의류' },
+      { text: '편한 신발', category: '의류' },
+      { text: '겉옷', category: '의류' },
+      { text: '칫솔/치약', category: '세면도구' },
+      { text: '샴푸/바디워시', category: '세면도구' },
+      { text: '상비약', category: '기타' },
+    ],
+    '국내여행': [
+      { text: '신분증', category: '서류' },
+      { text: '예약 확인서', category: '서류' },
+      { text: '휴대폰 충전기', category: '전자기기' },
+      { text: '보조배터리', category: '전자기기' },
+      { text: '속옷/양말', category: '의류' },
+      { text: '편한 신발', category: '의류' },
+      { text: '칫솔/치약', category: '세면도구' },
+      { text: '기초 화장품', category: '세면도구' },
+    ],
+    '캠핑': [
+      { text: '신분증', category: '서류' },
+      { text: '랜턴/손전등', category: '전자기기' },
+      { text: '휴대폰 충전기', category: '전자기기' },
+      { text: '방한복', category: '의류' },
+      { text: '여벌 옷', category: '의류' },
+      { text: '등산화/장화', category: '의류' },
+      { text: '텐트', category: '기타' },
+      { text: '침낭/매트', category: '기타' },
+      { text: '코펠/버너', category: '기타' },
+      { text: '식기/수저', category: '기타' },
+      { text: '비상약/구급함', category: '기타' },
+    ],
+    '출장': [
+      { text: '신분증', category: '서류' },
+      { text: '명함', category: '서류' },
+      { text: '발표 자료/USB', category: '서류' },
+      { text: '법인카드/영수증철', category: '서류' },
+      { text: '노트북', category: '전자기기' },
+      { text: '노트북 충전기', category: '전자기기' },
+      { text: '휴대폰 충전기', category: '전자기기' },
+      { text: '정장/셔츠', category: '의류' },
+      { text: '구두', category: '의류' },
+      { text: '칫솔/치약', category: '세면도구' },
+    ],
+  };
+
+  const input = document.getElementById('itemInput');
+  const categorySelect = document.getElementById('categorySelect');
+  const addBtn = document.getElementById('addBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const listArea = document.getElementById('listArea');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressPercent = document.getElementById('progressPercent');
+  const progressFill = document.getElementById('progressFill');
+
+  let items = [];
+  let nextId = 1;
+  let editingId = null;
+
+  function getCategoryIcon(name) {
+    const cat = CATEGORIES.find(c => c.name === name);
+    return cat ? cat.icon : '📦';
+  }
+
+  function render() {
+    listArea.innerHTML = '';
+
+    if (items.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = '아직 항목이 없어요. 위에서 템플릿을 불러오거나 직접 추가해보세요!';
+      listArea.appendChild(empty);
+      updateProgress();
+      return;
+    }
+
+    CATEGORIES.forEach(cat => {
+      const catItems = items.filter(i => i.category === cat.name);
+      if (catItems.length === 0) return;
+
+      const doneCount = catItems.filter(i => i.done).length;
+
+      const group = document.createElement('div');
+      group.className = 'category-group';
+
+      const header = document.createElement('div');
+      header.className = 'category-header';
+      header.innerHTML = `
+        <span class="category-icon">${cat.icon}</span>
+        <span>${cat.name}</span>
+        <span class="category-count">(${doneCount}/${catItems.length})</span>
+      `;
+      group.appendChild(header);
+
+      const ul = document.createElement('ul');
+      ul.className = 'items';
+
+      catItems.forEach(item => {
+        const li = document.createElement('li');
+        if (item.done) li.classList.add('done');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = item.done;
+        checkbox.addEventListener('change', () => toggleItem(item.id));
+        li.appendChild(checkbox);
+
+        if (editingId === item.id) {
+          const editInput = document.createElement('input');
+          editInput.type = 'text';
+          editInput.className = 'edit-input';
+          editInput.value = item.text;
+          editInput.maxLength = 50;
+
+          const finishEdit = (save) => {
+            if (save) {
+              const newText = editInput.value.trim();
+              if (newText) item.text = newText;
+            }
+            editingId = null;
+            render();
+          };
+
+          editInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') finishEdit(true);
+            else if (e.key === 'Escape') finishEdit(false);
+          });
+          editInput.addEventListener('blur', () => finishEdit(true));
+
+          li.appendChild(editInput);
+          setTimeout(() => {
+            editInput.focus();
+            editInput.select();
+          }, 0);
+        } else {
+          const span = document.createElement('span');
+          span.className = 'item-text';
+          span.textContent = item.text;
+          span.title = '더블클릭하여 수정';
+          span.addEventListener('dblclick', () => {
+            editingId = item.id;
+            render();
+          });
+          li.appendChild(span);
+        }
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = '×';
+        delBtn.setAttribute('aria-label', '삭제');
+        delBtn.addEventListener('click', () => deleteItem(item.id));
+        li.appendChild(delBtn);
+
+        ul.appendChild(li);
+      });
+
+      group.appendChild(ul);
+      listArea.appendChild(group);
+    });
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = items.length;
+    const done = items.filter(i => i.done).length;
+    progressLabel.textContent = `${total}개 중 ${done}개 완료`;
+    const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+    progressPercent.textContent = `${percent}%`;
+    progressFill.style.width = `${percent}%`;
+  }
+
+  function addItem() {
+    const text = input.value.trim();
+    if (!text) return;
+    items.push({
+      id: nextId++,
+      text,
+      done: false,
+      category: categorySelect.value,
+    });
+    input.value = '';
+    render();
+    input.focus();
+  }
+
+  function toggleItem(id) {
+    const item = items.find(i => i.id === id);
+    if (item) item.done = !item.done;
+    render();
+  }
+
+  function deleteItem(id) {
+    items = items.filter(i => i.id !== id);
+    render();
+  }
+
+  function loadTemplate(name) {
+    const template = TEMPLATES[name];
+    if (!template) return;
+
+    let proceed = true;
+    if (items.length > 0) {
+      proceed = confirm(`현재 목록에 항목이 있습니다.\n[확인] 현재 목록을 비우고 "${name}" 템플릿 불러오기\n[취소] 그대로 두기`);
+      if (!proceed) return;
+    }
+
+    items = template.map(t => ({
+      id: nextId++,
+      text: t.text,
+      done: false,
+      category: t.category,
+    }));
+    render();
+  }
+
+  function clearAll() {
+    if (items.length === 0) return;
+    if (!confirm('모든 항목을 삭제할까요?')) return;
+    items = [];
+    render();
+  }
+
+  addBtn.addEventListener('click', addItem);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addItem();
+  });
+
+  document.querySelectorAll('.template-btn').forEach(btn => {
+    btn.addEventListener('click', () => loadTemplate(btn.dataset.template));
+  });
+
+  clearBtn.addEventListener('click', clearAll);
+
+  render();
+</script>
+</body>
+</html>
